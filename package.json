@@ -1,0 +1,49 @@
+{
+  "name": "bdo-launcher",
+  "productName": "BDOLauncher",
+  "description": "Black Desert launcher with auto updates",
+  "keywords": [],
+  "main": "./app/main.js",
+  "version": "1.0.0",
+  "author": "sasha5434",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sasha5434/bdo-launcher.git"
+  },
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder build --win --publish never",
+    "deploy": "electron-builder build --win --publish always"
+  },
+  "dependencies": {
+    "electron-log": "^4.4.8",
+    "electron-updater": "^5.3.0",
+    "node-fetch": "^2.6.1",
+    "webtorrent": "^1.8.32"
+  },
+  "devDependencies": {
+    "electron": "21.1.0"
+  },
+  "build": {
+    "productName": "BDOlauncher",
+    "appId": "org.sasha5434.BDOlauncher",
+    "files": [
+      "app/main.js",
+      "app/preload.js",
+      "app/icon.png",
+      "app/error.html",
+      "package.json"
+    ],
+    "win": {
+      "target": "nsis",
+      "requestedExecutionLevel": "requireAdministrator",
+      "icon": "app/icon.png"
+    },
+    "nsis": {
+      "guid": "6ccdc064-3da9-4dc7-a3b0-d083d9aa583b",
+      "oneClick": false,
+      "perMachine": true,
+      "allowToChangeInstallationDirectory": true
+    }
+  }
+}
