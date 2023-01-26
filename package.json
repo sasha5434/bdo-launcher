@@ -4,7 +4,7 @@
   "description": "Black Desert launcher with auto updates",
   "keywords": [],
   "main": "./app/main.js",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "author": "sasha5434",
   "repository": {
     "type": "git",
@@ -19,7 +19,7 @@
     "electron-log": "^4.4.8",
     "electron-updater": "^5.3.0",
     "node-fetch": "^2.6.1",
-    "webtorrent": "^1.8.32"
+    "webtorrent": "^2.0.1"
   },
   "devDependencies": {
     "electron": "21.1.0"
