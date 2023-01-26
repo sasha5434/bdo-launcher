@@ -1,4 +1,5 @@
 const fs = require('fs');
+const dns = require('node:dns');
 const path = require('path')
 const {app, BrowserWindow, ipcMain, shell, dialog} = require('electron')
 const {autoUpdater} = require('electron-updater');
@@ -6,6 +7,14 @@ const WebTorrent = require('webtorrent');
 const fetch = require('node-fetch');
 var events = require('events');
 var eventEmitter = new events.EventEmitter();
+
+dns.setServers([
+    '8.8.8.8',
+    '8.8.4.4',
+    '1.1.1.1',
+    '94.140.14.14',
+    '94.140.15.15'
+]);
 
 const update = {
     client: '',
