@@ -22,7 +22,7 @@ const update = {
     version: 0
 }
 
-const url = 'https://tiberium.ml'
+const url = 'https://tiberium-desert.ru'
 
 function roundPlus(x, n) { //x - число, n - количество знаков
     if (isNaN(x) || isNaN(n)) return false;
