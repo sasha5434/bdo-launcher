@@ -75,6 +75,12 @@ function createWindow() {
     //start page
     mainWindow.loadFile(path.join(__dirname, '/index.html'))
 
+    //for open links
+    mainWindow.webContents.setWindowOpenHandler(({url}) => {
+        shell.openExternal(url);
+        return {action: 'deny'};
+    });
+
     // Open the DevTools.
     //mainWindow.webContents.openDevTools()
 
