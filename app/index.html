@@ -177,6 +177,9 @@
                         toastr.error(item)
                     });
                 }
+            },
+            error: function () {
+                toastr.error('Неудалось отправить запрос на сервер!')
             }
         })
     });
