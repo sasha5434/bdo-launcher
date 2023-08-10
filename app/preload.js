@@ -55,7 +55,7 @@ window.addEventListener('DOMContentLoaded', () => {
         document.getElementById('progress-speed').innerHTML = speed;
         document.getElementById('repair').setAttribute('disabled', 'disabled');
     });
-    ipcRenderer.on('update_finish', () => {
+    ipcRenderer.on('update_finish', (event, version) => {
         document.getElementsByClassName('progress-bar').item(0).setAttribute('aria-valuenow', 100);
         document.getElementsByClassName('progress-bar').item(0).setAttribute('style', 'width: 100%');
         document.getElementsByClassName('progress-bar').item(0).classList.remove("progress-bar-animated");
@@ -68,6 +68,7 @@ window.addEventListener('DOMContentLoaded', () => {
         document.getElementById('launch').setAttribute('style', 'display: block');
         document.getElementById('repair').removeAttribute('disabled');
         document.getElementById('launch').removeAttribute('disabled');
+        document.getElementById('gVersion').innerHTML = version;
     });
     ipcRenderer.on('update_found', () => {
         document.getElementsByClassName('download-check').item(0).setAttribute('style', 'display: none');

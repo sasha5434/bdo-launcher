@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+    <!-- <meta http-equiv="Content-Security-Policy" content="default-src https://tiberium-desert.ru; script-src https://tiberium-desert.ru"> -->
+    <title>Tiberium Desert</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="fontawesome/css/all.min.css" crossorigin="anonymous">
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="mdb/css/bootstrap.min.css">
+    <!-- Bootstrap flag icon CSS -->
+    <link rel="stylesheet" href="mdb/css/addons/flag.min.css">
+    <!-- Material Design Bootstrap -->
+    <link rel="stylesheet" href="mdb/css/mdb.min.css">
+    <link rel="stylesheet" href="launcher.css">
+</head>
+<body>
+<!-- Modal -->
+<div class="modal fade mt-4" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <form>
+            <div class="modal-content">
+                <div class="modal-header bg-dark text-light">
+                    <h5 class="modal-title" id="exampleModalLabel">Настройки <i class="fal fa-cog"></i></h5>
+                    <button type="button" class="close close-settings text-light" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body bg-light">
+                    <div class="row mr-0 ml-0">
+                        <div class="col-md-9 pl-0 pr-2">
+                            <div class="md-form form-sm mt-1">
+                                <i class="fas fa-folder prefix pt-1"></i>
+                                <input type="text" name="folder" id="folder" class="form-control form-control-sm validate mb-4" required="" value="C:\Games\BlackDesert" disabled>
+                                <label data-error="wrong" data-success="right" for="folder">Путь к файлам игры</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3 pl-0 pr-0">
+                            <button type="button" class="btn btn-dark btn-md mt-1" style="width: 100%;" onclick="selectFolder();">Выбрать <i class="fas fa-folder-open"></i></button>
+                        </div>
+                    </div>
+                    <div class="row mr-0 ml-0">
+                        <div class="col-md-6 pl-0 pr-5">
+                            <div class="md-form form-sm">
+                                <i class="fas fa-download prefix pt-1"></i>
+                                <input type="number" name="download" id="download" class="form-control form-control-sm validate mb-4" required="" value="100">
+                                <label data-error="wrong" data-success="right" for="download">Скорость загрузки MB/s</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6 pl-0 pr-0">
+                            <div class="md-form form-sm">
+                                <i class="fas fa-upload prefix pt-1"></i>
+                                <input type="number" name="upload" id="upload" class="form-control form-control-sm validate mb-4" required="" value="100">
+                                <label data-error="wrong" data-success="right" for="upload">Скорость отдачи MB/s</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="version">
+                        <div class="row mr-0 ml-0">
+                            <div class="col-md-9 pl-0 pr-5 pt-1">
+
+                                Версия лаунчера: <span id="lVersion"></span><br>
+                                Версия клиента игры: <span id="gVersion"></span>
+                            </div>
+                            <div class="col-md-3 pl-0 pr-0">
+                                <button id="repair" type="button" class="btn btn-dark btn-md mt-1" style="width: 100%;" onclick="repairClient();" disabled>Проверить <i class="far fa-tools"></i></button>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div id="version"></div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-dark btn-sm" data-dismiss="modal">Закрыть</button>
+                    <button type="button" class="btn btn-dark btn-sm" onclick="updateConfig();">Сохранить</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<button id="update" style="display: block;" type="button" class="btn btn-dark launch" onclick="updateGame();" disabled>Обновить игру</button>
+<button id="launch" style="display: none;" type="button" class="btn btn-dark launch" onclick="runGame();">Запустить игру</button>
+<nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <div class="navbar-nav pl-3">
+            <a class="nav-item nav-link" href="https://tiberium-desert.ru/" target="_blank">Сайт</a>
+            <a class="nav-item nav-link" href="https://vk.com/tibdesert" target="_blank">VK</a>
+            <a class="nav-item nav-link" href="https://discord.gg/aqAHTMRQXc" target="_blank">Discord</a>
+        </div>
+        <div class="navbar-nav right">
+            <button type="button" class="btn btn-dark btn-outline-light close logout" style="display: none;" onclick="logout();"><i class="fal fa-sign-out"></i></button>
+            <button type="button" class="btn btn-dark btn-outline-light close settings" data-toggle="modal" data-target="#exampleModal"><i class="fal fa-cog"></i></button>
+            <button type="button" class="btn btn-dark btn-outline-light close minimize" onclick="minimizeLauncher();"><i class="fas fa-window-minimize"></i></button>
+            <button type="button" class="btn btn-dark btn-outline-light close" onclick="closeLauncher();"><i class="fas fa-times"></i></button>
+        </div>
+    </div>
+</nav>
+<div class="clearfix"></div>
+<div id="notification" class="hidden">
+    <p id="message"></p>
+    <button id="close-button" onClick="closeNotification()">
+        Close
+    </button>
+    <button id="restart-button" onClick="restartApp()" class="hidden">
+        Restart
+    </button>
+</div>
+<div class="login">
+    <form id="authForm" class="text-light">
+        <div class="md-form form-sm mb-5">
+            <i class="fas fa-envelope prefix pt-1"></i>
+            <input type="email" name="email" id="email"
+                   class="form-control form-control-sm validate" required/>
+            <label class="text-light" data-error="wrong" data-success="right" for="email">
+                Ваш email
+            </label>
+        </div>
+
+        <div class="md-form form-sm mb-1">
+            <i class="fas fa-lock prefix pt-1"></i>
+            <input type="password" name="password" id="password"
+                   class="form-control form-control-sm validate" required/>
+            <label class="text-light" data-error="wrong" data-success="right" for="password">
+                Ваш пароль
+            </label>
+        </div>
+
+        <div class="text-center form-sm float-right mr-0">
+            <button type="button" id="auth" class="btn btn-dark mr-0">
+                Войти <i class="fas fa-sign-in ml-1"></i>
+            </button>
+        </div>
+    </form>
+</div>
+<div class="progress-container">
+    <div class="progress">
+        <div class="progress-bar bg-danger progress-bar-striped" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+    </div>
+    <div class="download-check" style="display: block;">Проверка обновлений..</div>
+    <div class="download-found" style="display: none;">Доступна новая версия!</div>
+    <div class="download-prepare" style="display: none;">Подготовка...</div>
+    <div class="download-progress" style="display: none;">Загрузка  <span id="progress-speed">0 b/s</span>.. <span id="progress-percent">0</span>%</div>
+    <div class="download-finish" style="display: none;">Обновление не требуется.</div>
+</div>
+<input type="text" name="token" id="token" value="" style="display: none;">
+<!-- JQuery -->
+<script type="text/javascript" src="mdb/js/jquery.min.js"></script>
+<!-- Bootstrap tooltips -->
+<script type="text/javascript" src="mdb/js/popper.min.js"></script>
+<!-- Bootstrap core JavaScript -->
+<script type="text/javascript" src="mdb/js/bootstrap.min.js"></script>
+<!-- MDB core JavaScript -->
+<script type="text/javascript" src="mdb/js/mdb.min.js"></script>
+<script>
+    $("#auth").click(function () {
+        $.ajax({
+            type: "POST",
+            url: "https://tiberium-desert.ru/launcher-login",
+            data: $("#authForm").serialize(),
+            success: function (reply) {
+                if (reply.message === 'ok') {
+                    document.getElementsByClassName('login').item(0).setAttribute('style', 'display: none');
+                    document.getElementsByClassName('logout').item(0).setAttribute('style', 'display: block');
+                    document.getElementById('token').setAttribute('value', reply.token);
+                } else {
+                    reply.message.split(',,').forEach(function (item) {
+                        toastr.options = {
+                            "debug": false,
+                            "positionClass": "launcher-toast-position",
+                            "onclick": null,
+                            "fadeIn": 300,
+                            "fadeOut": 1000,
+                            "timeOut": 5000,
+                            "extendedTimeOut": 1000
+                        }
+                        toastr.error(item)
+                    });
+                }
+            }
+        })
+    });
+    function logout() {
+        $.ajax({
+            type: "GET",
+            url: "https://tiberium-desert.ru/launcher-logout",
+            success: function (reply) {
+                if (reply.message === 'ok') {
+                    document.getElementsByClassName('login').item(0).setAttribute('style', 'display: block');
+                    document.getElementsByClassName('logout').item(0).setAttribute('style', 'display: none');
+                    document.getElementById('token').setAttribute('value', '');
+                }
+            }
+        })
+    }
+</script>
+<!-- Electron rendere -->
+<script src="renderer.js"></script>
+</body>
+</html>
