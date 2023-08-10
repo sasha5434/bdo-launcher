@@ -8,6 +8,8 @@ const fetch = require('node-fetch');
 var events = require('events');
 var eventEmitter = new events.EventEmitter();
 
+const url = 'https://tiberium-desert.ru'
+
 dns.setServers([
     '8.8.8.8',
     '8.8.4.4',
@@ -21,8 +23,6 @@ const update = {
     patch: '',
     version: 0
 }
-
-const url = 'https://tiberium-desert.ru'
 
 function roundPlus(x, n) { //x - число, n - количество знаков
     if (isNaN(x) || isNaN(n)) return false;
@@ -73,22 +73,7 @@ function createWindow() {
     mainWindow.setMenuBarVisibility(false)
 
     //start page
-    mainWindow.loadURL(url + '/launcher')
-
-    mainWindow.webContents.setWindowOpenHandler(({url}) => {
-        shell.openExternal(url);
-        return {action: 'deny'};
-    });
-
-    mainWindow.webContents.on('did-fail-load', function () {
-        mainWindow.loadFile(path.join(__dirname, '/error.html'))
-    });
-
-    mainWindow.webContents.on('did-navigate', (_event, _url, httpResponseCode) => {
-        if (httpResponseCode >= 400) {
-            mainWindow.loadFile('error.html')
-        }
-    });
+    mainWindow.loadFile(path.join(__dirname, '/index.html'))
 
     // Open the DevTools.
     //mainWindow.webContents.openDevTools()
@@ -108,6 +93,8 @@ function createWindow() {
         config.gameDir = data.gameDir
         config.speedD = data.speedD
         config.speedU = data.speedU
+        tClient.throttleDownload(parseInt(data.speedD, 10) * 1048576)
+        tClient.throttleUpload(parseInt(data.speedU, 10) * 1048576)
         fs.writeFileSync(path.join(settingsDir, 'config.json'), JSON.stringify(config));
     })
 
@@ -143,9 +130,11 @@ function createWindow() {
             if (err === null || err === undefined) {
                 const configR = JSON.parse(fs.readFileSync(path.join(settingsDir, 'config.json'), (err, data) => (data)));
                 config.gameDir = configR.gameDir
-                config.speedD = configR.speedD
-                config.speedU = configR.speedU
-                config.version = configR.version
+                config.speedD = parseInt(configR.speedD, 10)
+                config.speedU = parseInt(configR.speedU, 10)
+                config.version = parseInt(configR.version, 10)
+                tClient.throttleDownload(config.speedD * 1048576)
+                tClient.throttleUpload(config.speedU * 1048576)
                 eventEmitter.emit('config-loaded');
                 mainWindow.webContents.send('config-loaded', config);
             } else if (err.code === 'ENOENT') {
@@ -169,7 +158,7 @@ function createWindow() {
         tClient.add((config.version > 0) ? update.patch : update.client, {path: config.gameDir}, (torrent) => {
             torrent.on('done', function () {
                 console.log('torrent download finished')
-                mainWindow.webContents.send('update_finish');
+                mainWindow.webContents.send('update_finish', update.version);
                 config.version = update.version
                 fs.writeFileSync(path.join(settingsDir, 'config.json'), JSON.stringify(config));
                 if (interval) {

@@ -4,7 +4,7 @@
   "description": "Black Desert launcher with auto updates",
   "keywords": [],
   "main": "./app/main.js",
-  "version": "4.0.0",
+  "version": "5.0.0",
   "author": "sasha5434",
   "repository": {
     "type": "git",
@@ -28,11 +28,7 @@
     "productName": "BDOlauncher",
     "appId": "org.sasha5434.BDOlauncher",
     "files": [
-      "app/main.js",
-      "app/preload.js",
-      "app/icon.png",
-      "app/error.html",
-      "package.json"
+      "**/*"
     ],
     "win": {
       "target": "nsis",
