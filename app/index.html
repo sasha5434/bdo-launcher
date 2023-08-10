@@ -163,6 +163,11 @@
                     document.getElementsByClassName('login').item(0).setAttribute('style', 'display: none');
                     document.getElementsByClassName('logout').item(0).setAttribute('style', 'display: block');
                     document.getElementById('token').setAttribute('value', reply.token);
+                    const data = {
+                        email: document.getElementById("email").value,
+                        password: document.getElementById("password").value
+                    }
+                    window.electronAPI.saveLogin(data)
                 } else {
                     reply.message.split(',,').forEach(function (item) {
                         toastr.options = {

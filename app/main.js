@@ -98,6 +98,12 @@ function createWindow() {
         fs.writeFileSync(path.join(settingsDir, 'config.json'), JSON.stringify(config));
     })
 
+    ipcMain.handle('save_login', (event, data) => {
+        config.email = data.email
+        config.password = data.password
+        fs.writeFileSync(path.join(settingsDir, 'config.json'), JSON.stringify(config));
+    })
+
     autoUpdater.on('update-available', () => {
         mainWindow.webContents.send('update_available');
     });
@@ -133,6 +139,8 @@ function createWindow() {
                 config.speedD = parseInt(configR.speedD, 10)
                 config.speedU = parseInt(configR.speedU, 10)
                 config.version = parseInt(configR.version, 10)
+                config.email = configR.email
+                config.password = configR.password
                 tClient.throttleDownload(config.speedD * 1048576)
                 tClient.throttleUpload(config.speedU * 1048576)
                 eventEmitter.emit('config-loaded');
@@ -179,7 +187,7 @@ function createWindow() {
         tClient.add(update.client, {path: config.gameDir}, (torrent) => {
             torrent.on('done', function () {
                 console.log('torrent download finished')
-                mainWindow.webContents.send('update_finish');
+                mainWindow.webContents.send('update_finish', update.version);
                 config.version = update.version
                 fs.writeFileSync(path.join(settingsDir, 'config.json'), JSON.stringify(config));
                 if (interval) {

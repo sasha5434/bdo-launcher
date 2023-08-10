@@ -8,6 +8,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
     updateGame: () => ipcRenderer.invoke('start_update'),
     selectGameDir: (dir) => ipcRenderer.invoke('select_directory', dir),
     updateConfig: (config) => ipcRenderer.invoke('update_config', config),
+    saveLogin: (data) => ipcRenderer.invoke('save_login', data),
     repairClient: () => ipcRenderer.invoke('repair_client')
 })
 
@@ -96,6 +97,15 @@ window.addEventListener('DOMContentLoaded', () => {
         document.getElementById('upload').setAttribute('value', config.speedU);
         document.getElementById('download').setAttribute('value', config.speedD);
         document.getElementById('gVersion').innerText = config.version;
+        document.getElementById('email').setAttribute('value', (config.email) ? config.email : '');
+        if (config.email !== undefined && config.email !== '') {
+            document.getElementById('email').focus();
+        }
+        document.getElementById('password').setAttribute('value', (config.password) ? config.password : '');
+        if (config.password !== undefined && config.password !== '') {
+            document.getElementById('password').focus();
+        }
+        document.getElementById('auth').focus();
     })
     ipcRenderer.on('directory-selected', (event, directrory) => {
         document.getElementById('folder').setAttribute('value', directrory);
