@@ -28,7 +28,8 @@
     "productName": "BDOlauncher",
     "appId": "org.sasha5434.BDOlauncher",
     "files": [
-      "**/*"
+      "app/**/*",
+      "package.json"
     ],
     "win": {
       "target": "nsis",
