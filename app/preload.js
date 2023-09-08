@@ -48,6 +48,8 @@ window.addEventListener('DOMContentLoaded', () => {
     });
     ipcRenderer.on('verify_progress', (event, progress) => {
         document.getElementsByClassName('progress-bar').item(0).setAttribute('aria-valuenow', progress);
+        document.getElementsByClassName('progress-bar').item(0).setAttribute('style', 'width:' + progress + '%');
+        document.getElementsByClassName('progress-bar').item(0).classList.add("progress-bar-animated");
         document.getElementById('verify-progress').innerHTML = progress;
     });
     ipcRenderer.on('update_progress', (event, progress, speed) => {
