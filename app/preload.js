@@ -51,6 +51,7 @@ window.addEventListener('DOMContentLoaded', () => {
         document.getElementsByClassName('progress-bar').item(0).setAttribute('style', 'width:' + progress + '%');
         document.getElementsByClassName('progress-bar').item(0).classList.add("progress-bar-animated");
         document.getElementById('verify-progress').innerHTML = progress;
+        document.getElementById('repair').setAttribute('disabled', 'disabled');
     });
     ipcRenderer.on('update_progress', (event, progress, speed) => {
         document.getElementsByClassName('progress-bar').item(0).setAttribute('aria-valuenow', progress);

@@ -169,26 +169,29 @@ function createWindow() {
 
     ipcMain.handle('start_update', () => {
         console.log('torrent download start')
+        interval = setInterval(() => {
+            mainWindow.webContents.send('verify_progress', Math.ceil(tClient.progress * 100));
+        }, 150);
         tClient.add((config.version > 0) ? update.patch : update.client, {path: config.gameDir}, (torrent) => {
             torrent.on('done', function () {
                 console.log('torrent download finished')
-                mainWindow.webContents.send('update_finish', update.version);
                 config.version = update.version
                 fs.writeFileSync(path.join(settingsDir, 'config.json'), JSON.stringify(config));
                 if (interval) {
                     clearInterval(interval);
                 }
+                mainWindow.webContents.send('update_finish', update.version);
                 if (tClient) {
                     tClient.destroy();
                 }
             });
+            if (interval) {
+                clearInterval(interval);
+            }
             interval = setInterval(() => {
                 mainWindow.webContents.send('update_progress', Math.ceil(torrent.progress * 100), speedBeautify(torrent.downloadSpeed));
             }, 150);
         });
-        interval = setInterval(() => {
-            mainWindow.webContents.send('verify_progress', Math.ceil(tClient.progress * 100));
-        }, 150);
     })
 
     ipcMain.handle('repair_client', () => {
@@ -199,17 +202,19 @@ function createWindow() {
         tClient.add(update.client, {path: config.gameDir}, (torrent) => {
             torrent.on('done', function () {
                 console.log('torrent download finished')
-                mainWindow.webContents.send('update_finish', update.version);
-                config.version = update.version
-                fs.writeFileSync(path.join(settingsDir, 'config.json'), JSON.stringify(config));
                 if (interval) {
                     clearInterval(interval);
                 }
+                mainWindow.webContents.send('update_finish', update.version);
+                config.version = update.version
+                fs.writeFileSync(path.join(settingsDir, 'config.json'), JSON.stringify(config));
                 if (tClient) {
                     tClient.destroy();
                 }
             });
-            clearInterval(interval);
+            if (interval) {
+                clearInterval(interval);
+            }
             interval = setInterval(() => {
                 mainWindow.webContents.send('update_progress', Math.ceil(torrent.progress * 100), speedBeautify(torrent.downloadSpeed));
             }, 150);
