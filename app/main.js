@@ -186,6 +186,9 @@ function createWindow() {
                 mainWindow.webContents.send('update_progress', Math.ceil(torrent.progress * 100), speedBeautify(torrent.downloadSpeed));
             }, 150);
         });
+        interval = setInterval(() => {
+            mainWindow.webContents.send('verify_progress', Math.ceil(tClient.progress * 100));
+        }, 150);
     })
 
     ipcMain.handle('repair_client', () => {
@@ -207,6 +210,9 @@ function createWindow() {
                 mainWindow.webContents.send('update_progress', Math.ceil(torrent.progress * 100), speedBeautify(torrent.downloadSpeed));
             }, 150);
         });
+        interval = setInterval(() => {
+            mainWindow.webContents.send('verify_progress', Math.ceil(tClient.progress * 100));
+        }, 150);
     })
 }
 

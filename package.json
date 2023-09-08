@@ -4,7 +4,7 @@
   "description": "Black Desert launcher with auto updates",
   "keywords": [],
   "main": "./app/main.js",
-  "version": "9.0.0",
+  "version": "10.0.0",
   "author": "sasha5434",
   "repository": {
     "type": "git",
