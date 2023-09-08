@@ -31,18 +31,18 @@ window.addEventListener('DOMContentLoaded', () => {
     });
 
     const notification = document.getElementById('notification');
-    const message = document.getElementById('message');
+    const uMessage = document.getElementById('update-message');
     const restartButton = document.getElementById('restart-button');
 
     ipcRenderer.on('update_available', () => {
         ipcRenderer.removeAllListeners('update_available');
-        message.innerText = 'A new update is available. Downloading now...';
+        uMessage.innerText = 'Доступна новая версия лаунчера! Идёт загрузка обновления...';
         notification.classList.remove('hidden');
     });
 
     ipcRenderer.on('update_downloaded', () => {
         ipcRenderer.removeAllListeners('update_downloaded');
-        message.innerText = 'Update Downloaded. It will be installed on restart. Restart now?';
+        uMessage.innerText = 'Обновление лаунчера загружено! Оно будет установлено при перезапуске.<br><br>Перезапустить сейчас?';
         restartButton.classList.remove('hidden');
         notification.classList.remove('hidden');
     });
@@ -50,28 +50,21 @@ window.addEventListener('DOMContentLoaded', () => {
         document.getElementsByClassName('progress-bar').item(0).setAttribute('aria-valuenow', progress);
         document.getElementsByClassName('progress-bar').item(0).setAttribute('style', 'width:' + progress + '%');
         document.getElementsByClassName('progress-bar').item(0).classList.add("progress-bar-animated");
-        document.getElementById('verify-progress').innerHTML = progress;
+        document.getElementById('message').innerHTML = `Проверка загруженных файлов: ${progress}%`;
         document.getElementById('repair').setAttribute('disabled', 'disabled');
     });
     ipcRenderer.on('update_progress', (event, progress, speed) => {
         document.getElementsByClassName('progress-bar').item(0).setAttribute('aria-valuenow', progress);
         document.getElementsByClassName('progress-bar').item(0).setAttribute('style', 'width:' + progress + '%');
         document.getElementsByClassName('progress-bar').item(0).classList.add("progress-bar-animated");
-        document.getElementsByClassName('download-prepare').item(0).setAttribute('style', 'display: none');
-        document.getElementsByClassName('download-progress').item(0).setAttribute('style', 'display: block');
-        document.getElementById('progress-percent').innerHTML = progress;
-        document.getElementById('progress-speed').innerHTML = speed;
+        document.getElementById('message').innerHTML = `Загрузка файлов: ${speed} - ${progress}%`;
         document.getElementById('repair').setAttribute('disabled', 'disabled');
     });
     ipcRenderer.on('update_finish', (event, version) => {
         document.getElementsByClassName('progress-bar').item(0).setAttribute('aria-valuenow', 100);
         document.getElementsByClassName('progress-bar').item(0).setAttribute('style', 'width: 100%');
         document.getElementsByClassName('progress-bar').item(0).classList.remove("progress-bar-animated");
-        document.getElementsByClassName('download-check').item(0).setAttribute('style', 'display: none');
-        document.getElementsByClassName('download-found').item(0).setAttribute('style', 'display: none');
-        document.getElementsByClassName('download-prepare').item(0).setAttribute('style', 'display: none');
-        document.getElementsByClassName('download-progress').item(0).setAttribute('style', 'display: none');
-        document.getElementsByClassName('download-finish').item(0).setAttribute('style', 'display: block');
+        document.getElementById('message').innerHTML = 'Загрузка (проверка) файлов успешно завершена.';
         document.getElementById('update').setAttribute('style', 'display: none');
         document.getElementById('launch').setAttribute('style', 'display: block');
         document.getElementById('repair').removeAttribute('disabled');
@@ -79,21 +72,13 @@ window.addEventListener('DOMContentLoaded', () => {
         document.getElementById('gVersion').innerHTML = version;
     });
     ipcRenderer.on('update_found', () => {
-        document.getElementsByClassName('download-check').item(0).setAttribute('style', 'display: none');
-        document.getElementsByClassName('download-found').item(0).setAttribute('style', 'display: block');
-        document.getElementsByClassName('download-prepare').item(0).setAttribute('style', 'display: none');
-        document.getElementsByClassName('download-progress').item(0).setAttribute('style', 'display: none');
-        document.getElementsByClassName('download-finish').item(0).setAttribute('style', 'display: none');
+        document.getElementById('message').innerHTML = 'Необходимо обновить игру!';
         document.getElementById('update').setAttribute('style', 'display: block');
         document.getElementById('launch').setAttribute('style', 'display: none');
         document.getElementById('update').removeAttribute('disabled');
     });
     ipcRenderer.on('update_notfound', () => {
-        document.getElementsByClassName('download-check').item(0).setAttribute('style', 'display: none');
-        document.getElementsByClassName('download-found').item(0).setAttribute('style', 'display: none');
-        document.getElementsByClassName('download-prepare').item(0).setAttribute('style', 'display: none');
-        document.getElementsByClassName('download-progress').item(0).setAttribute('style', 'display: none');
-        document.getElementsByClassName('download-finish').item(0).setAttribute('style', 'display: block');
+        document.getElementById('message').innerHTML = 'Обновление не требуется.';
         document.getElementById('update').setAttribute('style', 'display: none');
         document.getElementById('launch').setAttribute('style', 'display: block');
         document.getElementById('repair').removeAttribute('disabled');

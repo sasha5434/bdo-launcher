@@ -182,7 +182,7 @@ function createWindow() {
                 }
                 mainWindow.webContents.send('update_finish', update.version);
                 if (tClient) {
-                    tClient.destroy();
+                    tClient.remove(torrent.infoHash);
                 }
             });
             if (interval) {
@@ -209,7 +209,7 @@ function createWindow() {
                 config.version = update.version
                 fs.writeFileSync(path.join(settingsDir, 'config.json'), JSON.stringify(config));
                 if (tClient) {
-                    tClient.destroy();
+                    tClient.remove(torrent.infoHash);
                 }
             });
             if (interval) {

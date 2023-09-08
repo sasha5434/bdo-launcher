@@ -36,11 +36,6 @@ function restartApp() {
 
 function updateGame() {
     window.electronAPI.updateGame();
-    document.getElementsByClassName('download-check').item(0).setAttribute('style', 'display: none');
-    document.getElementsByClassName('download-found').item(0).setAttribute('style', 'display: none');
-    document.getElementsByClassName('download-prepare').item(0).setAttribute('style', 'display: block');
-    document.getElementsByClassName('download-progress').item(0).setAttribute('style', 'display: none');
-    document.getElementsByClassName('download-finish').item(0).setAttribute('style', 'display: none');
     document.getElementById('update').setAttribute('disabled', 'disabled');
 }
 
@@ -55,18 +50,15 @@ function updateConfig() {
         "speedU": document.getElementById("upload").value,
         "speedD": document.getElementById("download").value
     }
+    document.getElementById('message').innerHTML = 'Конфиг сохранён!';
     window.electronAPI.updateConfig(config);
     $('#exampleModal').modal('hide');
 }
 
 function repairClient() {
-    document.getElementsByClassName('download-check').item(0).setAttribute('style', 'display: none');
-    document.getElementsByClassName('download-found').item(0).setAttribute('style', 'display: none');
-    document.getElementsByClassName('download-prepare').item(0).setAttribute('style', 'display: block');
-    document.getElementsByClassName('download-progress').item(0).setAttribute('style', 'display: none');
-    document.getElementsByClassName('download-finish').item(0).setAttribute('style', 'display: none');
     document.getElementById('launch').setAttribute('disabled', 'disabled');
     document.getElementById('repair').setAttribute('disabled', 'disabled');
+    document.getElementById('message').innerHTML = 'Запускается проверка файлов клиента!';
     window.electronAPI.repairClient();
     $('#exampleModal').modal('hide');
 }
