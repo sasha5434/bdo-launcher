@@ -36,13 +36,13 @@ window.addEventListener('DOMContentLoaded', () => {
 
     ipcRenderer.on('update_available', () => {
         ipcRenderer.removeAllListeners('update_available');
-        uMessage.innerText = 'Доступна новая версия лаунчера! Идёт загрузка обновления...';
+        uMessage.innerHTML = 'Доступна новая версия лаунчера! Идёт загрузка обновления...';
         notification.classList.remove('hidden');
     });
 
     ipcRenderer.on('update_downloaded', () => {
         ipcRenderer.removeAllListeners('update_downloaded');
-        uMessage.innerText = "Обновление лаунчера загружено! Оно будет установлено при перезапуске.<br/><br/>Перезапустить сейчас?";
+        uMessage.innerHTML = "Обновление лаунчера загружено! Оно будет установлено при перезапуске.<br><br>Перезапустить сейчас?";
         restartButton.classList.remove('hidden');
         notification.classList.remove('hidden');
     });
