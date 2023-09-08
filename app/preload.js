@@ -47,6 +47,7 @@ window.addEventListener('DOMContentLoaded', () => {
         notification.classList.remove('hidden');
     });
     ipcRenderer.on('verify_progress', (event, progress) => {
+        document.getElementsByClassName('progress-bar').item(0).setAttribute('aria-valuenow', progress);
         document.getElementById('verify-progress').innerHTML = progress;
     });
     ipcRenderer.on('update_progress', (event, progress, speed) => {

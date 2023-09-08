@@ -193,6 +193,9 @@ function createWindow() {
 
     ipcMain.handle('repair_client', () => {
         console.log('torrent download start')
+        interval = setInterval(() => {
+            mainWindow.webContents.send('verify_progress', Math.ceil(tClient.progress * 100));
+        }, 150);
         tClient.add(update.client, {path: config.gameDir}, (torrent) => {
             torrent.on('done', function () {
                 console.log('torrent download finished')
@@ -206,13 +209,11 @@ function createWindow() {
                     tClient.destroy();
                 }
             });
+            clearInterval(interval);
             interval = setInterval(() => {
                 mainWindow.webContents.send('update_progress', Math.ceil(torrent.progress * 100), speedBeautify(torrent.downloadSpeed));
             }, 150);
         });
-        interval = setInterval(() => {
-            mainWindow.webContents.send('verify_progress', Math.ceil(tClient.progress * 100));
-        }, 150);
     })
 }
 
