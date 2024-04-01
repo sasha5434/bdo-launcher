@@ -240,17 +240,31 @@ app.whenReady().then(() => {
     })
 
     ipcMain.handle('run', (event, token) => {
-        var child = child_process.execFile;
+        var child = child_process.spawn;
         var runPath = path.join(config.gameDir, 'client/bin64');
         var executablePath = path.join(runPath, 'BlackDesert64.exe');
         var parameters = [token];
         var options = {
-            cwd: runPath
+            cwd: runPath,
+            detached: true
         }
 
         child(executablePath, parameters, options, function (err, data) {
             console.log(err)
         });
+        try {
+            child.unref()
+        } catch (e) {
+        }
+        try {
+            tClient.destroy();
+        } catch (e) {
+        }
+        try {
+            clearInterval(interval);
+        } catch (e) {
+        }
+        app.quit();
     })
 
     createWindow()
