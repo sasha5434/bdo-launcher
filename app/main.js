@@ -1,14 +1,19 @@
-const fs = require('fs');
-const dns = require('node:dns');
-const path = require('path')
-const {app, BrowserWindow, ipcMain, shell, dialog} = require('electron')
-const {autoUpdater} = require('electron-updater');
-const WebTorrent = require('webtorrent')
-const fetch = require('node-fetch');
-var events = require('events');
-var eventEmitter = new events.EventEmitter();
+import fs from 'node:fs'
+import dns from 'node:dns'
+import path from 'node:path'
+import events from 'node:events'
+import child_process from 'node:child_process'
+import {app, BrowserWindow, ipcMain, shell, dialog} from 'electron'
+import updater from 'electron-updater'
+import log from 'electron-log'
+import WebTorrent from 'webtorrent'
+import fetch from 'node-fetch'
 
+const eventEmitter = new events.EventEmitter();
+const __dirname = path.join(path.resolve(), 'resources/app.asar/app')
 const url = 'https://tiberium-desert.ru'
+const autoUpdater = updater.autoUpdater
+let interval = null
 
 dns.setServers([
     '8.8.8.8',
@@ -160,7 +165,6 @@ function createWindow() {
             }
         });
 
-        const log = require("electron-log")
         log.transports.file.level = "debug"
         autoUpdater.logger = log
         autoUpdater.checkForUpdatesAndNotify()
@@ -236,7 +240,7 @@ app.whenReady().then(() => {
     })
 
     ipcMain.handle('run', (event, token) => {
-        var child = require('child_process').execFile;
+        var child = child_process.execFile;
         var runPath = path.join(config.gameDir, 'client/bin64');
         var executablePath = path.join(runPath, 'BlackDesert64.exe');
         var parameters = [token];

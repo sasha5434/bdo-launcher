@@ -4,7 +4,8 @@
   "description": "Black Desert launcher with auto updates",
   "keywords": [],
   "main": "./app/main.js",
-  "version": "19.0.0",
+  "type": "module",
+  "version": "20.0.0",
   "author": "sasha5434",
   "repository": {
     "type": "git",
@@ -16,13 +17,10 @@
     "deploy": "electron-builder build --win --publish always"
   },
   "dependencies": {
-    "electron-log": "^4.4.8",
-    "electron-updater": "^5.3.0",
-    "node-fetch": "^2.6.1",
-    "webtorrent": "^1.9.7"
-  },
-  "devDependencies": {
-    "electron": "21.1.0"
+    "electron-log": "^5.1.2",
+    "electron-updater": "^6.1.8",
+    "node-fetch": "^3.3.2",
+    "webtorrent": "^2.2.1"
   },
   "build": {
     "productName": "BDOlauncher",
@@ -42,5 +40,8 @@
       "perMachine": true,
       "allowToChangeInstallationDirectory": true
     }
+  },
+  "devDependencies": {
+    "electron": "^29.1.6"
   }
 }
