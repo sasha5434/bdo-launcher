@@ -65,6 +65,7 @@ const tClient = new WebTorrent({
 })
 
 async function getUpdate() {
+    update.version = 0
     console.log('start check new client version')
     try {
         const response = await fetch(url + '/updates', {
@@ -86,6 +87,7 @@ function createWindow() {
         height: 450,
         frame: false,
         resizable: false,
+        maximizable: false,
         webPreferences: {
             preload: path.join(__dirname, 'preload.js')
         },
@@ -204,12 +206,17 @@ function createWindow() {
             }
             interval = setInterval(() => {
                 mainWindow.webContents.send('update_progress', Math.ceil(torrent.progress * 100), speedBeautify(torrent.downloadSpeed));
-            }, 150);
+            }, 500);
         });
     })
 
     ipcMain.handle('repair_client', async () => {
         await getUpdate()
+        if (update.version === 0) {
+            mainWindow.webContents.send('update_finish', config.version);
+            mainWindow.webContents.send('update_error');
+            return
+        }
         console.log('torrent download start')
         interval = setInterval(() => {
             mainWindow.webContents.send('verify_progress', Math.ceil(tClient.progress * 100));
@@ -232,21 +239,13 @@ function createWindow() {
             }
             interval = setInterval(() => {
                 mainWindow.webContents.send('update_progress', Math.ceil(torrent.progress * 100), speedBeautify(torrent.downloadSpeed));
-            }, 150);
+            }, 500);
         });
     })
 }
 
 app.whenReady().then(() => {
     ipcMain.handle('close', () => {
-        try {
-            tClient.destroy();
-        } catch (e) {
-        }
-        try {
-            clearInterval(interval);
-        } catch (e) {
-        }
         app.quit();
     })
 
@@ -267,14 +266,6 @@ app.whenReady().then(() => {
             child.unref()
         } catch (e) {
         }
-        try {
-            tClient.destroy();
-        } catch (e) {
-        }
-        try {
-            clearInterval(interval);
-        } catch (e) {
-        }
         app.quit();
     })
 
@@ -289,11 +280,7 @@ app.on('window-all-closed', function () {
     if (process.platform !== 'darwin') app.quit()
 })
 
-ipcMain.on('app_version', (event) => {
-    event.sender.send('app_version', {version: app.getVersion()});
-});
-
-ipcMain.on('restart_app', () => {
+app.on('before-quit', function () {
     try {
         tClient.destroy();
     } catch (e) {
@@ -302,5 +289,12 @@ ipcMain.on('restart_app', () => {
         clearInterval(interval);
     } catch (e) {
     }
+})
+
+ipcMain.on('app_version', (event) => {
+    event.sender.send('app_version', {version: app.getVersion()});
+});
+
+ipcMain.on('restart_app', () => {
     autoUpdater.quitAndInstall();
 });
