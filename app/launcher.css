@@ -13,6 +13,7 @@ body {
   background-repeat: no-repeat;
   background-position: center center;
   min-height: 100%;
+  -webkit-user-select: none;
 }
 
 #message {
@@ -62,6 +63,12 @@ body {
   z-index: 102;
   -webkit-app-region: no-drag;
   padding: 1px !important;
+}
+
+.settings:focus {
+  outline: 5px auto -webkit-focus-ring-color !important;
+  outline-offset: -2px !important;
+  outline: none !important;
 }
 
 .right {

@@ -11,6 +11,7 @@ import fetch from 'node-fetch'
 
 const eventEmitter = new events.EventEmitter();
 const __dirname = path.join(path.resolve(), 'resources/app.asar/app')
+//const __dirname = path.join(path.resolve(), '/app')
 const url = 'https://tiberium-desert.ru'
 const autoUpdater = updater.autoUpdater
 let interval = null
@@ -62,6 +63,22 @@ const tClient = new WebTorrent({
     downloadLimit: config.speedD * 1048576,
     uploadLimit: config.speedU * 1048576
 })
+
+async function getUpdate() {
+    console.log('start check new client version')
+    try {
+        const response = await fetch(url + '/updates', {
+            method: 'GET'
+        })
+        const data = await response.json()
+        update.client = data.client
+        update.patch = data.patch
+        update.version = data.version
+    } catch (e) {
+        console.log('check new client version failed')
+        console.log(e)
+    }
+}
 
 function createWindow() {
     const mainWindow = new BrowserWindow({
@@ -124,21 +141,14 @@ function createWindow() {
     });
 
     eventEmitter.on('config-loaded', async () => {
-        try {
-            const response = await fetch(url + '/updates', {
-                method: 'GET'
-            })
-            const data = await response.json()
-            update.client = data.client
-            update.patch = data.patch
-            update.version = data.version
-            if (data.version > config.version) {
-                mainWindow.webContents.send('update_found');
-            } else {
-                mainWindow.webContents.send('update_notfound');
-            }
-        } catch (e) {
-            console.log(e)
+        await getUpdate()
+
+        if (update.version === 0) {
+            mainWindow.webContents.send('update_error');
+        } else if (update.version > config.version) {
+            mainWindow.webContents.send('update_found');
+        } else {
+            mainWindow.webContents.send('update_notfound');
         }
     });
 
@@ -171,13 +181,13 @@ function createWindow() {
 
     });
 
-    ipcMain.handle('start_update', () => {
+    ipcMain.handle('start_update', async () => {
         console.log('torrent download start')
         interval = setInterval(() => {
             mainWindow.webContents.send('verify_progress', Math.ceil(tClient.progress * 100));
         }, 150);
         tClient.add((config.version > 0) ? update.patch : update.client, {path: config.gameDir}, (torrent) => {
-            torrent.on('done', function () {
+            torrent.on('done', async () => {
                 console.log('torrent download finished')
                 config.version = update.version
                 fs.writeFileSync(path.join(settingsDir, 'config.json'), JSON.stringify(config));
@@ -186,7 +196,7 @@ function createWindow() {
                 }
                 mainWindow.webContents.send('update_finish', update.version);
                 if (tClient) {
-                    tClient.remove(torrent.infoHash);
+                    await tClient.remove(torrent.infoHash);
                 }
             });
             if (interval) {
@@ -198,13 +208,14 @@ function createWindow() {
         });
     })
 
-    ipcMain.handle('repair_client', () => {
+    ipcMain.handle('repair_client', async () => {
+        await getUpdate()
         console.log('torrent download start')
         interval = setInterval(() => {
             mainWindow.webContents.send('verify_progress', Math.ceil(tClient.progress * 100));
         }, 150);
         tClient.add(update.client, {path: config.gameDir}, (torrent) => {
-            torrent.on('done', function () {
+            torrent.on('done', async () => {
                 console.log('torrent download finished')
                 if (interval) {
                     clearInterval(interval);
@@ -213,7 +224,7 @@ function createWindow() {
                 config.version = update.version
                 fs.writeFileSync(path.join(settingsDir, 'config.json'), JSON.stringify(config));
                 if (tClient) {
-                    tClient.remove(torrent.infoHash);
+                    await tClient.remove(torrent.infoHash);
                 }
             });
             if (interval) {

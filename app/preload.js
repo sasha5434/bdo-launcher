@@ -71,6 +71,13 @@ window.addEventListener('DOMContentLoaded', () => {
         document.getElementById('launch').removeAttribute('disabled');
         document.getElementById('gVersion').innerHTML = version;
     });
+    ipcRenderer.on('update_error', () => {
+        document.getElementById('message').innerHTML = 'Не удалось проверить наличие обновлений!';
+        document.getElementById('update').setAttribute('style', 'display: none');
+        document.getElementById('launch').setAttribute('style', 'display: block');
+        document.getElementById('repair').removeAttribute('disabled');
+        document.getElementById('launch').setAttribute('disabled', 'disabled');
+    });
     ipcRenderer.on('update_found', () => {
         document.getElementById('message').innerHTML = 'Необходимо обновить игру!';
         document.getElementById('update').setAttribute('style', 'display: block');
